@@ -1,0 +1,249 @@
+<!-- 
+    Angelica Nicolette U. Adoptante 
+    2020-01692
+    CMSC 161 - B1L
+    Exercise 6-7: Alpha Blending and Varying Colors
+    Pokemon: Swadloon
+    -->
+
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <title>
+                Swadloon in 3D with Fancy Colors!
+            </title>
+            <link rel="stylesheet" href="style.css"/>
+        </head>
+    
+        <body>
+            <div id="container">
+                <!-- preparing the drawing area -->
+                <div id="canvas-container">
+                    <canvas id="output" width="500" height="500"></canvas>
+                </div>
+                <!-- inputs area -->
+                <div id="input">
+
+                    <span class="title">AFFINE TRANSFORMATION</span>
+                    <div id="translate" class="separate">
+                        <!-- 2 text boxes for x and y; one button for enter -->
+                        <input id="x-units" placeholder="X UNITS" type="number"/>
+                        <input id="y-units" placeholder="Y UNITS" type="number"/>
+                        <button id="translate-btn">MOVE</button>
+                    </div>
+                    <div id="rotate" class="separate">
+                        <!-- 2 text boxes for ANCHOR POINT and ANGLE OF ROTATION; one button for enter -->
+                        <input id="anchor-point-x" placeholder="X-ORIGIN" type="number"/>
+                        <input id="anchor-point-y" placeholder="Y-ORIGIN" type="number"/>
+                        <input id="angle" placeholder="ANGLE" type="number"/>
+                        <button id="rotate-btn">ROTATE</button>
+                    </div>
+                    <div id="scale" class="separate">
+                        <!-- 2 text boxes for x and y scale; one button for enter -->
+                        <input id="x-scale" placeholder="X SCALE" type="number"/>
+                        <input id="y-scale" placeholder="Y SCALE" type="number"/>
+                        <button id="scale-btn">SCALE</button>
+                    </div>
+
+                    <!-- displaying the values -->
+                    <div id="values">
+                        <p>current values: </p>
+                        <span id="current-origin"></span>
+                        <span id="current-position"></span>
+                        <span id="current-angle"></span>
+                        <span id="current-scale-values"></span>
+                    </div>
+
+                    <br/>
+                    <!-- projection -->
+                    <span class="title">PROJECTION</span>
+                    <br/>
+                    <span class="medium">VIEW POINT</span>
+                    <div id="view-point" class="separate">
+                        <div class="slidercontainer"> <!-- from  https://www.w3schools.com/howto/howto_js_rangeslider.asp-->
+                            <span class="small">X: </span><input id="x-view-point" type="range" min="-1" max="1" value="0" step="0.01" class="slider"><span id="x-view-point-value"></span>
+                        </div>
+                        <div class="slidercontainer">
+                            <span class="small">Y: </span><input id="y-view-point" type="range" min="-1" max="1" value="0" step="0.01" class="slider"><span id="y-view-point-value"></span>
+                        </div>
+                        <div class="slidercontainer">
+                            <span class="small">Z: </span><input id="z-view-point" type="range" min="-1" max="1" value="0" step="0.01" class="slider"><span id="z-view-point-value"></span>
+                        </div>
+                    </div>
+                    
+                    <span class="medium">CENTER POINT</span>
+                    <div id="center-point" class="separate">
+                        <div class="slidercontainer">
+                            <span class="small">X: </span><input id="x-center-point" type="range" min="-1" max="1" value="0" step="0.01" class="slider"><span id="x-center-point-value"></span>
+                        </div>
+                        <div class="slidercontainer">
+                            <span class="small">Y: </span><input id="y-center-point" type="range" min="-1" max="1" value="0" step="0.01" class="slider"><span id="y-center-point-value"></span>
+                        </div>
+                        <div class="slidercontainer">
+                            <span class="small">Z: </span><input id="z-center-point" type="range" min="-1" max="1" value="0" step="0.01" class="slider"><span id="z-center-point-value"></span>
+                        </div>
+                    </div>
+                    
+                    <span class="medium">UP VECTOR</span>
+                    <div id="up-vector" class="separate">
+                        <div class="slidercontainer">
+                            <span class="small">X: </span><input id="x-up-vector" type="range" min="-1" max="1" value="0" step="0.01" class="slider"><span id="x-up-vector-value"></span>
+                        </div>
+                        <div class="slidercontainer">
+                            <span class="small">Y: </span><input id="y-up-vector" type="range" min="-1" max="1" value="0" step="0.01" class="slider"><span id="y-up-vector-value"></span>
+                        </div>
+                        <div class="slidercontainer">
+                            <span class="small">Z: </span><input id="z-up-vector" type="range" min="-1" max="1" value="0" step="0.01" class="slider"><span id="z-up-vector-value"></span>
+                        </div>
+                    </div>
+
+                    <div id="perspective" class="separate row">
+                        <div class="column">
+                            <span class="small">PERSPECTIVE</span> <input id="pers-checkbox" type="checkbox" value="0">
+                            <button id="upd-project">UPDATE PROJECTION</button>
+                        </div>
+                        <div class="column">
+                            <input id="left" placeholder="LEFT" type="number"/><input id="right" placeholder="RIGHT" type="number"/><input id="top" placeholder="TOP" type="number"/><input id="bottom" placeholder="BOTTOM" type="number"/>
+            
+                        </div>
+                        <div class="column">
+                            <div class="slidercontainer">
+                                <span class="small">NEAR: </span><input id="near" type="range" min="-10" max="10" value="0" step="0.1" class="slider"><span id="near-value"></span>
+                            </div>
+                            <div class="slidercontainer">
+                                <span class="small">FAR: </span><input id="far" type="range" min="-10" max="10" value="1" step="0.1" class="slider"><span id="far-value"></span>
+                            </div>
+                            <div class="slidercontainer">
+                                <span class="small">ANGLE: </span><input id="angle-slider" type="range" min="0" max="360" value="0" step="0.1" class="slider"><span id="angle-value"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- blending -->
+                    <span class="medium">BLENDING</span>
+                    <br/>
+                    <!-- dropdown for alpha blending -->
+                    <div class="row">
+                        <span class="small">ENABLE BLENDING:</span> <input id="blend-checkbox" type="checkbox" value="0">
+                        <div class="separate">
+                            <label class="small" for="colors">COLORS: </label>
+                            <select class="dropdown" name="colors" id="colors">
+                                <option value="alpha-blending">Alpha Blending</option>
+                                <option value="varying-colors">Varying Colors</option>
+                            </select>
+                        </div>
+                        <span class="medium gray">BLENDING FACTORS</span>
+                        <div class="separate row">
+                            <div>
+                                <label class="small" for="src-blend">SOURCE: </label>
+                                <select class="dropdown" name="src-blend" id="src-blend">
+                                    <option value="ZERO">gl.ZERO</option>
+                                    <option value="ONE">gl.ONE</option>
+                                    <option value="SRC_COLOR">gl.SRC_COLOR</option>
+                                    <option value="ONE_MINUS_SRC_COLOR">gl.ONE_MINUS_SRC_COLOR</option>
+                                    <option value="DST_COLOR">gl.DST_COLOR</option>
+                                    <option value="ONE_MINUS_DST_COLOR">gl.ONE_MINUS_DST_COLOR</option>
+                                    <option value="SRC_ALPHA">gl.SRC_ALPHA</option>
+                                    <option value="ONE_MINUS_SRC_ALPHA">gl.ONE_MINUS_SRC_ALPHA</option>
+                                    <option value="DST_ALPHA">gl.DST_ALPHA</option>
+                                    <option value="ONE_MINUS_DST_ALPHA">gl.ONE_MINUS_DST_ALPHA</option>
+                                    <option value="CONSTANT_COLOR">gl.CONSTANT_COLOR</option>
+                                    <option value="ONE_MINUS_CONSTANT_COLOR">gl.ONE_MINUS_CONSTANT_COLOR</option>
+                                    <option value="CONSTANT_ALPHA">gl.CONSTANT_ALPHA</option>
+                                    <option value="ONE_MINUS_CONSTANT_ALPHA">gl.ONE_MINUS_CONSTANT_ALPHA</option>
+                                    <option value="SRC_ALPHA_SATURATE">gl.SRC_ALPHA_SATURATE</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="small" for="dst-blend">DESTINATION: </label>
+                                <select class="dropdown" name="dst-blend" id="dst-blend">
+                                    <option value="ZERO">gl.ZERO</option>
+                                    <option value="ONE">gl.ONE</option>
+                                    <option value="SRC_COLOR">gl.SRC_COLOR</option>
+                                    <option value="ONE_MINUS_SRC_COLOR">gl.ONE_MINUS_SRC_COLOR</option>
+                                    <option value="DST_COLOR">gl.DST_COLOR</option>
+                                    <option value="ONE_MINUS_DST_COLOR">gl.ONE_MINUS_DST_COLOR</option>
+                                    <option value="SRC_ALPHA">gl.SRC_ALPHA</option>
+                                    <option value="ONE_MINUS_SRC_ALPHA">gl.ONE_MINUS_SRC_ALPHA</option>
+                                    <option value="DST_ALPHA">gl.DST_ALPHA</option>
+                                    <option value="ONE_MINUS_DST_ALPHA">gl.ONE_MINUS_DST_ALPHA</option>
+                                    <option value="CONSTANT_COLOR">gl.CONSTANT_COLOR</option>
+                                    <option value="ONE_MINUS_CONSTANT_COLOR">gl.ONE_MINUS_CONSTANT_COLOR</option>
+                                    <option value="CONSTANT_ALPHA">gl.CONSTANT_ALPHA</option>
+                                    <option value="ONE_MINUS_CONSTANT_ALPHA">gl.ONE_MINUS_CONSTANT_ALPHA</option>
+                                    <option value="SRC_ALPHA_SATURATE">gl.SRC_ALPHA_SATURATE</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="separate">
+                            <label class="small" for="equation">EQUATION: </label>
+                            <select class="dropdown" name="equation" id="equation">
+                                <option value="FUNC_ADD">gl.FUNC_ADD</option>
+                                <option value="FUNC_SUBTRACT">gl.FUNC_SUBTRACT</option>
+                            </select>
+                        </div>
+                        <button id="alpha-blending-btn">BLEND</button>
+                        <button id="random-color-btn">VARY COLOR</button>
+                        <button id="reset-btn">RESET</button>
+                    </div>
+                    <br/>
+                    
+                </div>
+            </div>
+    
+            <!-- VERTEX SHADER -->
+            <script id="vertex-shader" type="notjs">#version 300 es
+                in vec4 a_position;
+                in float a_point_size;
+                in vec4 vertexColor;
+                out vec4 fragmentColor;
+
+                // matrix
+                uniform mat4 u_transformation_matrix;
+                // 3D stuff
+                uniform mat4 u_model_matrix;
+                uniform mat4 u_view_matrix;
+                uniform mat4 u_projection_matrix;
+                
+                void main() {
+                    // gl_Position = a_position;
+                    gl_Position = u_transformation_matrix * u_view_matrix * u_model_matrix * u_projection_matrix * a_position; // global variable
+                    gl_PointSize = a_point_size;
+                    fragmentColor = vertexColor;
+                }
+            </script>
+    
+            <!-- FRAGMENT SHADER -->
+            <script id="fragment-shader" type="notjs">#version 300 es
+                precision mediump float;
+                // uniform vec4 u_color;
+                in vec4 fragmentColor;
+                out vec4 outColor;
+                void main() {
+                    // outColor = vec4(0.38823529, 0.40784314, 0.08627451, 1);
+                    outColor = fragmentColor;
+                }
+            </script>
+    
+            <!-- FUNCTION FOR CREATING AND COMPILING SHADER PROGRAMS -->
+            <!-- binds shader program with the variable -->
+            <script>
+                function createShader (gl, type, sourceCode) {
+                    // Compiles either a shader of type gl.VERTEX_SHADER or gl.FRAGMENT_SHADER
+                    var shader = gl.createShader( type );
+                    gl.shaderSource( shader, sourceCode );
+                    gl.compileShader( shader );
+                    if ( !gl.getShaderParameter(shader, gl.COMPILE_STATUS) ) {
+                        var info = gl.getShaderInfoLog( shader );
+                        throw new Error('Could not compile WebGL program. \n\n' + info);
+                    }
+                    return shader;
+                }
+            </script>
+
+            <!-- add script for the logic -->
+            <script src="./utils/gl-matrix.js"></script>
+            <script type="module" src="main.js"></script>
+        </body>
+    </html>
