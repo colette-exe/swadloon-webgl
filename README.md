@@ -7,7 +7,7 @@ Interactive Computer Graphics output
 3. Blending (alpha blending and varying colors)
 
 ## Files
-1. AdoptanteEx6-7.html
+1. index.html
   - main and only html file
   - shaders and buttons configuration
 2. main.js
